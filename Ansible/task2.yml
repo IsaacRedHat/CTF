@@ -25,6 +25,11 @@
         dev: "{{ partition }}"
         force: true
 
+    - name: Create IT group
+      ansible.builtin.group:
+        name: IT
+        state: present
+
     - name: Create mount point directory
       file:
         path: "{{ mount_point }}"
