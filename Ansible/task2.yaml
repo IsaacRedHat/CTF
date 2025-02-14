@@ -6,10 +6,10 @@
   vars:
     base_dir: /team
     folders:
-      - sales
-      - support
-      - services
-      - it
+      - Sales
+      - Support
+      - Services
+      - IT
     special_user: ctf_sa
 
   tasks:
@@ -19,6 +19,11 @@
         path: "{{ base_dir }}"
         state: directory
         mode: '0755'
+
+    - name: create special users
+      user: 
+        name: "{{ special_user }}"
+        state: present
 
     # Create team folders
     - name: Create team folders
