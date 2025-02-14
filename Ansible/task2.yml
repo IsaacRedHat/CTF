@@ -1,0 +1,68 @@
+---
+- name: Configure Storage Drive and Mount Point
+  hosts: all
+  become: true
+  
+  vars:
+    device: /dev/nvme1n1
+    partition: /dev/nvme1n1p1
+    mount_point: /extdrive
+    fs_type: xfs
+    partition_size: 1024
+
+  tasks:
+    - name: Create 1GB partition
+      community.general.parted:
+        device: "{{ device }}"
+        number: 1
+        state: present
+        part_end: "{{ partition_size }}MiB"
+        fs_type: "{{ fs_type }}"
+
+    - name: Create XFS filesystem
+      filesystem:
+        fstype: "{{ fs_type }}"
+        dev: "{{ partition }}"
+
+    - name: Create mount point directory
+      file:
+        path: "{{ mount_point }}"
+        state: directory
+        mode: '0750'
+        group: IT
+        owner: root
+
+    - name: Add mount to /etc/fstab
+      mount:
+        path: "{{ mount_point }}"
+        src: "{{ partition }}"
+        fstype: "{{ fs_type }}"
+        state: mounted
+        opts: defaults
+        dump: 0
+        passno: 2
+
+    - name: Set directory permissions for IT group
+      file:
+        path: "{{ mount_point }}"
+        state: directory
+        group: IT
+        mode: '0770'
+        recurse: yes
+
+    - name: Ensure SELinux context is set correctly
+      sefcontext:
+        target: '{{ mount_point }}(/.*)?'
+        setype: default_t
+        state: present
+      when: ansible_selinux.status == "enabled"
+
+    - name: Apply SELinux context
+      command: restorecon -Rv {{ mount_point }}
+      when: ansible_selinux.status == "enabled"
+
+  handlers:
+    - name: remount filesystem
+      mount:
+        path: "{{ mount_point }}"
+        state: remounted
