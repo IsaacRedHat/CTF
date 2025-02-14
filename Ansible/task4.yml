@@ -56,8 +56,8 @@
         mode: '0755'
         content: |
           #!/bin/bash
-          STATUS=$(systemctl is-active cockpit.socket)
-          echo "$(date '+%Y-%m-%d %H:%M:%S') - Cockpit service status: $STATUS" >> /var/log/automation.log
+          STATUS=$(systemctl is-active cockpit.service)
+          echo "$STATUS" >> /var/log/automation.log
 
     - name: Create cron job for checking cockpit status
       cron:
