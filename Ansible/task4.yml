@@ -15,6 +15,7 @@
         path: /etc/chrony
         owner: chrony
         group: chrony
+        state: directory
 
     - name: Configure NTP server
       lineinfile:
