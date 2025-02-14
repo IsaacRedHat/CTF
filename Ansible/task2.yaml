@@ -45,7 +45,7 @@
     - name: create dir
       file: 
         path: "{{ base_dir }}/it/tasks.done"
-        state: present
+        state: file
 
     # Create and populate tasks.done in IT folder
     - name: Create tasks.done file
