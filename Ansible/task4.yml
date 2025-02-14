@@ -35,6 +35,11 @@
         state: started
         enabled: yes
 
+    - name: Restart cockpitf
+      service:
+        name: cockpit
+        state: restarted
+
     # Create scheduled task
     - name: Create log file if not exists
       file:
