@@ -42,6 +42,11 @@
         mode: '0644'
         owner: "{{ special_user }}"
 
+    - name: create dir
+      file: 
+        path: /it
+        state: present
+
     # Create and populate tasks.done in IT folder
     - name: Create tasks.done file
       copy:
