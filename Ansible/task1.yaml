@@ -1,5 +1,46 @@
 ---
  - name: task 1
    hosts: servers
+   vars: 
+    groups: 
+     - Sales
+     - Support
+     - Services
+     - IT
+    users: 
+     - name: 'Annabelle'
+       group: 'Sales'
+     - name: 'Frank'
+       group: 'Sales'
+     - name: 'Carl'
+       group: 'Support'
+     - name: 'Dyson'
+       group: 'Support'
+     - name: 'Gerry'
+       group: 'Support'
+     - name: 'Services'
+       group: 'Jameson'
+     - name: 'Services'
+       group: 'Isabella'
+     - name: 'IT'
+       group: 'Harold'
+     - name: 'IT'
+       group: 'Evert'
+     - name: 'IT'
+       group: 'Bob'
+    password: '@#FD12'
+
    tasks:
-    - name: 
+    - name: create groups
+      ansible.builtin.group: 
+       name: "{{ item }}"
+       state: present
+      loop: groups
+
+    - name: create users
+      ansible.builtin.user:
+       name: "{{ item.name }}"
+       group: "{{ item.group }}"
+       password: "{{ password }}"
+      loop: users
+
