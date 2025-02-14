@@ -50,20 +50,11 @@
         state: touch
         mode: '0644'
 
-    - name: Create script for checking cockpit status
-      copy:
-        dest: /usr/local/bin/check_cockpit.sh
-        mode: '0755'
-        content: |
-          #!/bin/bash
-          STATUS=$(systemctl is-active cockpit.service)
-          echo "$STATUS" >> /var/log/automation.log
-
     - name: Create cron job for checking cockpit status
       cron:
         name: "runningaway"
         minute: "*/5"
-        job: "/usr/local/bin/check_cockpit.sh"
+        job: "systemctl is-active cockpit.service"
         state: present
 
     # Verify Configuration
