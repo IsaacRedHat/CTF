@@ -1,0 +1,88 @@
+---
+- name: Configure NTP, Cockpit and Scheduled Task
+  hosts: server2
+  become: true
+
+  tasks:
+    # NTP Configuration
+    - name: Install chrony package
+      package:
+        name: chrony
+        state: present
+
+    - name: Configure NTP server
+      lineinfile:
+        path: /etc/chrony.conf
+        regexp: '^server'
+        line: 'server 3.north-america.pool.ntp.org iburst'
+        backup: yes
+
+    - name: Start and enable chronyd service
+      service:
+        name: chronyd
+        state: started
+        enabled: yes
+
+    # Cockpit Configuration
+    - name: Install cockpit
+      package:
+        name: cockpit
+        state: present
+
+    - name: Start and enable cockpit service
+      service:
+        name: cockpit.socket
+        state: started
+        enabled: yes
+
+    - name: Allow cockpit in firewall
+      firewalld:
+        service: cockpit
+        permanent: yes
+        state: enabled
+      when: ansible_os_family == "RedHat"
+
+    # Create scheduled task
+    - name: Create log file if not exists
+      file:
+        path: /var/log/automation.log
+        state: touch
+        mode: '0644'
+
+    - name: Create script for checking cockpit status
+      copy:
+        dest: /usr/local/bin/check_cockpit.sh
+        mode: '0755'
+        content: |
+          #!/bin/bash
+          STATUS=$(systemctl is-active cockpit.socket)
+          echo "$(date '+%Y-%m-%d %H:%M:%S') - Cockpit service status: $STATUS" >> /var/log/automation.log
+
+    - name: Create cron job for checking cockpit status
+      cron:
+        name: "runningaway"
+        minute: "*/5"
+        job: "/usr/local/bin/check_cockpit.sh"
+        state: present
+
+    # Verify Configuration
+    - name: Verify chronyd is running
+      command: chronyc tracking
+      register: chrony_status
+      changed_when: false
+
+    - name: Display chrony status
+      debug:
+        var: chrony_status.stdout_lines
+
+    - name: Verify cockpit is accessible
+      uri:
+        url: http://localhost:9090
+        method: GET
+        status_code: 200,301,302,403
+      register: cockpit_status
+      ignore_errors: yes
+
+    - name: Display cockpit status
+      debug:
+        var: cockpit_status
