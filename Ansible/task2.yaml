@@ -6,10 +6,10 @@
   vars:
     base_dir: /team
     folders:
-      - sales
-      - support
-      - services
-      - it
+      - Sales
+      - Support
+      - Services
+      - IT
     special_user: ctf_sa
 
   tasks:
