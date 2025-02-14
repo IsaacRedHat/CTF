@@ -1,0 +1,81 @@
+---
+- name: Setup Team Folders and Files
+  hosts: all
+  become: true
+
+  vars:
+    base_dir: /team
+    folders:
+      - sales
+      - support
+      - services
+      - it
+    special_user: ctf_sa
+
+  tasks:
+    # Create base directory
+    - name: Create team base directory
+      file:
+        path: "{{ base_dir }}"
+        state: directory
+        mode: '0755'
+
+    # Create team folders
+    - name: Create team folders
+      file:
+        path: "{{ base_dir }}/{{ item }}"
+        state: directory
+        mode: '0755'
+        owner: "{{ special_user }}"
+      loop: "{{ folders }}"
+
+    # Create Salesnumbers file in sales folder
+    - name: Create Salesnumbers file
+      file:
+        path: "{{ base_dir }}/sales/Salesnumbers"
+        state: touch
+        mode: '0644'
+        owner: "{{ special_user }}"
+
+    # Create and populate tasks.done in IT folder
+    - name: Create tasks.done file
+      copy:
+        content: "all folders are set\n"
+        dest: "{{ base_dir }}/it/tasks.done"
+        mode: '0644'
+        owner: "{{ special_user }}"
+
+    # Ensure ctf_sa has access to all folders and files
+    - name: Set ctf_sa ownership recursively
+      file:
+        path: "{{ base_dir }}"
+        owner: "{{ special_user }}"
+        group: "{{ special_user }}"
+        recurse: yes
+
+    # Verify setup
+    - name: Verify directory structure
+      stat:
+        path: "{{ base_dir }}/{{ item }}"
+      register: dir_check
+      loop: "{{ folders }}"
+
+    - name: Verify files exist
+      stat:
+        path: "{{ item }}"
+      register: file_check
+      loop:
+        - "{{ base_dir }}/sales/Salesnumbers"
+        - "{{ base_dir }}/it/tasks.done"
+
+    - name: Check tasks.done content
+      command: "cat {{ base_dir }}/it/tasks.done"
+      register: file_content
+      changed_when: false
+
+    - name: Display verification results
+      debug:
+        msg: 
+          - "Directories exist: {{ dir_check.results | map(attribute='stat.exists') | list }}"
+          - "Files exist: {{ file_check.results | map(attribute='stat.exists') | list }}"
+          - "tasks.done content: {{ file_content.stdout }}"
