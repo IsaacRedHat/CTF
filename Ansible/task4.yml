@@ -12,7 +12,7 @@
 
     - name: Configure NTP server
       lineinfile:
-        path: /etc/chrony.conf
+        path: /etc/chrony/chrony.conf
         regexp: '^server'
         line: 'server 3.north-america.pool.ntp.org iburst'
         backup: yes
