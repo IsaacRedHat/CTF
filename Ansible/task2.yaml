@@ -20,6 +20,11 @@
         state: directory
         mode: '0755'
 
+    - name: create special users
+      user: 
+        name: "{{ special_user }}"
+        state: present
+
     # Create team folders
     - name: Create team folders
       file:
