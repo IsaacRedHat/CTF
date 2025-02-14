@@ -50,11 +50,12 @@
         state: touch
         mode: '0644'
 
+
     - name: Create cron job for checking cockpit status
       cron:
         name: "runningaway"
         minute: "*/5"
-        job: "systemctl is-active cockpit.service"
+        job: "echo $(systemctl is-active cockpit.service) >> /var/log/automation.log"
         state: present
 
     # Verify Configuration
