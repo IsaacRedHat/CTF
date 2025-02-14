@@ -44,14 +44,14 @@
 
     - name: create dir
       file: 
-        path: /it
+        path: "{{ base_dir }}/it/tasks.done"
         state: present
 
     # Create and populate tasks.done in IT folder
     - name: Create tasks.done file
       copy:
         content: "all folders are set\n"
-        dest: "/it/tasks.done"
+        dest: "{{ base_dir }}/it/tasks.done"
         mode: '0644'
         owner: "{{ special_user }}"
 
