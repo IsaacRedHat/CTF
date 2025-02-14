@@ -35,6 +35,12 @@
         state: started
         enabled: yes
 
+    - name: Update python package
+      package:
+        name: python3-dnf
+        state: latest
+      when: ansible_os_family == "RedHat"
+
     - name: Allow cockpit in firewall
       firewalld:
         service: cockpit
