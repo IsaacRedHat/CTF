@@ -10,6 +10,12 @@
         name: chrony
         state: present
 
+    - name: Create /etc/chrony directory
+      file:
+        path: /etc/chrony
+        owner: chrony
+        group: chrony
+
     - name: Configure NTP server
       lineinfile:
         path: /etc/chrony/chrony.conf
