@@ -41,7 +41,7 @@
         state: restarted
     
     - name: Check status on cockpit
-      shell: systemctl status cockpit
+      shell: systemctl is-active cockpit.service
 
     # Create scheduled task
     - name: Create log file if not exists
