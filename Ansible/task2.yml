@@ -23,6 +23,7 @@
       filesystem:
         fstype: "{{ fs_type }}"
         dev: "{{ partition }}"
+        force: true
 
     - name: Create mount point directory
       file:
