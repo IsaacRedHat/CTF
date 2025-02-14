@@ -46,9 +46,10 @@
     - name: Create tasks.done file
       copy:
         content: "all folders are set\n"
-        dest: "{{ base_dir }}/it/tasks.done"
+        dest: "/it/tasks.done"
         mode: '0644'
         owner: "{{ special_user }}"
+
 
     # Ensure ctf_sa has access to all folders and files
     - name: Set ctf_sa ownership recursively
